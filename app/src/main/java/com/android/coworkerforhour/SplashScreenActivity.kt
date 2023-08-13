@@ -1,6 +1,5 @@
 package com.android.coworkerforhour
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,7 +15,7 @@ class SplashScreenActivity : AppCompatActivity() {
         binding = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Thread.sleep(3000L)
-        startActivity(Intent(this@SplashScreenActivity, MainActivity::class.java))
+        startActivity(Intent(this@SplashScreenActivity, AuthenticationActivity::class.java))
         finish()
     }
 }
