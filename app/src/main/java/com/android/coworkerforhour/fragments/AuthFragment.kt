@@ -1,5 +1,9 @@
 package com.android.coworkerforhour.fragments
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,17 +11,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.Toast
 import com.android.coworkerforhour.R
+import com.android.coworkerforhour.activityes.UserProfileActivity
 import com.android.coworkerforhour.databinding.FragmentAuthBinding
 import com.android.coworkerforhour.interfaces.FragmentNavigation
 import com.android.coworkerforhour.objects.FieldValidators
 import com.google.android.material.textfield.TextInputEditText
+import kotlin.properties.Delegates
 
 
 class AuthFragment : Fragment() {
 
     private lateinit var binding: FragmentAuthBinding
+
 
     inner class TextFieldValidation(view: View, view2: View) :
         TextWatcher {
@@ -33,12 +42,6 @@ class AuthFragment : Fragment() {
                 }
             }
         }
-
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -53,18 +56,32 @@ class AuthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        putPrefsToConsts()
+
+        checkPrefsOnStart()
+
         setUpListeners()
 
         binding.logInBt.setOnClickListener {
-            if (isValidated()){
-                Toast.makeText(this.requireContext(),"Login successful", Toast.LENGTH_SHORT).show()
-                navigateToFragmentProfile()
+            if (isValidated()) {
+                putPrefsToConsts()
+                checkPrefsOnClick()
             }
         }
 
         binding.signInBt.setOnClickListener {
             navigateToFragmentRegistration()
         }
+    }
+
+    private fun putPrefsToConsts() {
+        val sharedPreferences = activity?.getSharedPreferences(
+            UserProfileFragment.MY_PREFS,
+            Context.MODE_PRIVATE
+        )
+        USER_NAME = sharedPreferences?.getString("USER_NAME", "").toString()
+       USER_PASSWORD = sharedPreferences?.getString("USER_PASSWORD","").toString()
+
     }
 
     private fun navigateToFragmentRegistration(){
@@ -74,10 +91,49 @@ class AuthFragment : Fragment() {
         }
     }
 
-    private fun navigateToFragmentProfile(){
-        apply {
-            val navToReg = this.activity as FragmentNavigation
-            navToReg.navigationFrag(UserProfile(),false)
+    private fun navigateToUserProfile(){
+        val userProfileActivityIntent = Intent(requireContext(),UserProfileActivity::class.java)
+        startActivity(userProfileActivityIntent)
+        requireActivity().finish()
+    }
+    private fun checkPrefsOnClick(){
+        binding.apply {
+            val sharedPreferences = activity?.getSharedPreferences(
+                AuthFragment.SHARED_PREFS,
+                Context.MODE_PRIVATE)
+
+            val userName = sharedPreferences?.getString("USER_NAME", "")
+            val password = sharedPreferences?.getString("USER_PASSWORD","")
+            val userNameString = userNameLoginFr.text.toString()
+            val passwordString = passwordFrLogin.text.toString()
+
+            if (userName.equals(userNameString)&&password.equals(passwordString)){
+                Toast.makeText(activity, "Login successful", Toast.LENGTH_SHORT).show()
+               navigateToUserProfile()
+                } else {
+                    Toast.makeText(activity,"Check correctness of your inputs", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun checkPrefsOnStart(){
+        binding.apply {
+            val userNameString = USER_NAME
+            val passwordString = USER_PASSWORD
+
+            val sharedPreferences = activity?.getSharedPreferences(
+                AuthFragment.SHARED_PREFS,
+                Context.MODE_PRIVATE)
+
+            val userName = sharedPreferences?.getString("USER_NAME", "")
+            val password = sharedPreferences?.getString("USER_PASSWORD","")
+
+            if (userName == "" && password == ""){
+                return
+            } else if(userName.equals(userNameString)&&password.equals(passwordString)){
+                Toast.makeText(activity, "Login successful", Toast.LENGTH_SHORT).show()
+                navigateToUserProfile()
+            }
         }
     }
 
@@ -165,6 +221,9 @@ class AuthFragment : Fragment() {
 
     companion object {
 
+        const val SHARED_PREFS = "sharedPrefs"
+        var USER_NAME = ""
+        var USER_PASSWORD = ""
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             AuthFragment().apply {

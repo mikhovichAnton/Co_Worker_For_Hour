@@ -3,12 +3,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.UserProfile">
+    tools:context=".fragments.UserProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/username_prof_fr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="140dp"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textSize="24dp"
         android:text="Hi user" />
+
+    <TextView
+        android:id="@+id/user_email_prof_fr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textSize="24dp"
+        android:text="Hi user" />
+
+    <TextView
+        android:id="@+id/user_password_prof_fr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="250dp"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textSize="24dp"
+        android:text="Hi user" />
+
+    <Button
+        android:id="@+id/log_out_bt"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="230dp"
+        android:layout_gravity="center"
+        android:text="@string/log_out"
+        android:textAllCaps="false"/>
 
 </FrameLayout>

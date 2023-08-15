@@ -1,20 +1,16 @@
 package com.android.coworkerforhour.fragments
 
-import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
-import com.android.coworkerforhour.AuthenticationActivity
-import com.android.coworkerforhour.MainActivity
-import com.android.coworkerforhour.R
+import com.android.coworkerforhour.activityes.UserProfileActivity
 import com.android.coworkerforhour.databinding.FragmentRegisterFormBinding
 import com.android.coworkerforhour.interfaces.FragmentNavigation
 import com.android.coworkerforhour.objects.FieldValidators.isStringContainNumber
@@ -28,6 +24,11 @@ class RegisterFormFragment : Fragment() {
 
     private lateinit var binding: FragmentRegisterFormBinding
 
+    private lateinit var userNameString: String
+
+    private lateinit var emailString: String
+
+    private lateinit var passwordString: String
 
     inner class TextFieldValidation(view: View, view2: View, view3: View, view4: View) : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
@@ -71,7 +72,8 @@ class RegisterFormFragment : Fragment() {
         binding.registerBt.setOnClickListener {
             if (isValidated()){
                 Toast.makeText(this.requireContext(),"Validated successfully", Toast.LENGTH_SHORT).show()
-                navigateToFragmentProfile()
+                saveProfilePrefs()
+
             }
         }
     }
@@ -83,12 +85,35 @@ class RegisterFormFragment : Fragment() {
         }
     }
 
-    private fun navigateToFragmentProfile(){
-        apply {
-            val navToReg = this.activity as FragmentNavigation
-            navToReg.navigationFrag(UserProfile(),false)
-        }
+    private fun navigateToUserProfile(){
+        val userProfileActivityIntent = Intent(requireContext(),UserProfileActivity::class.java)
+        startActivity(userProfileActivityIntent)
+        requireActivity().finish()
     }
+
+
+    private fun saveProfilePrefs(){
+        binding.apply {
+
+             userNameString = tietEnterUserName.text.toString()
+             emailString = tietEnterEmail.text.toString()
+             passwordString = tietInputPassword.text.toString()
+
+            val sharedPreferences = activity?.getSharedPreferences(
+                AuthFragment.SHARED_PREFS,
+                Context.MODE_PRIVATE
+            )
+            val editor = sharedPreferences?.edit()
+            with(editor){
+                this?.putString("USER_NAME", userNameString)
+                this?.putString("EMAIL", emailString)
+                this?.putString("USER_PASSWORD", passwordString)
+                this?.apply()
+            }
+        }
+        navigateToUserProfile()
+    }
+
 
 
 
@@ -221,6 +246,8 @@ class RegisterFormFragment : Fragment() {
 
 
     companion object {
+
+        const val MY_PREFS = "sharedPrefs"
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =

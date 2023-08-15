@@ -12,10 +12,17 @@
         android:theme="@style/Theme.CoWorkerForHour"
         tools:targetApi="31">
         <activity
-            android:name=".AuthenticationActivity"
+            android:name=".activityes.TasksActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".activityes.UserProfileActivity"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ASSIST"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activityes.SplashScreenActivity"
             android:exported="true"
             android:theme="@style/Theme.SplashTheme">
             <intent-filter>
@@ -25,9 +32,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:name=".activityes.AuthenticationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activityes.MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

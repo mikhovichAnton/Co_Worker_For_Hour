@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activityes.SplashScreenActivity">
+    tools:context=".activityes.UserProfileActivity">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/user_profile_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_user_profile"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,8 +11,9 @@
         android:id="@+id/auth_fr_welcome_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="250dp"
-        android:layout_gravity="center"
+        android:layout_marginTop="75dp"
+        android:layout_marginStart="95dp"
+        android:layout_marginEnd="95dp"
         android:text="@string/welcome_to_co_worker_for_hour"
         android:textAlignment="center"/>
 
@@ -58,6 +59,7 @@
             android:inputType="textPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/log_in_bt"
