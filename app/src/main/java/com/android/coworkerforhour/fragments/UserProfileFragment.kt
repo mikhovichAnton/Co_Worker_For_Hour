@@ -8,8 +8,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.ViewModelFactoryDsl
+import com.android.coworkerforhour.UsersApp
 import com.android.coworkerforhour.activityes.AuthenticationActivity
+import com.android.coworkerforhour.activityes.viewModel.UsersViewModel
+import com.android.coworkerforhour.activityes.viewModel.UsersViewModelFactory
 import com.android.coworkerforhour.databinding.FragmentUserProfileBinding
+import com.android.coworkerforhour.repository.UsersRepository
 
 
 class UserProfileFragment : Fragment() {
@@ -19,6 +27,9 @@ class UserProfileFragment : Fragment() {
     private lateinit var userName : String
     private lateinit var userEmail : String
     private lateinit var userPassword : String
+    private lateinit var repository: UsersRepository
+    private lateinit var viewModel: UsersViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +45,19 @@ class UserProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        repository = UsersRepository(UsersApp.INSTANCE.database.usersDao())
+        viewModel = ViewModelProvider(this,UsersViewModelFactory(repository))
+            .get(UsersViewModel::class.java)
 
         getSharedPreFromRegist()
 
+
+
+
         binding.apply {
-            usernameProfFr.text = userName
-            userEmailProfFr.text = userEmail
-            userPasswordProfFr.text = userPassword
+            usernameProfFr.text = "Welcome user ${userName}"
         }
+
         binding.logOutBt.setOnClickListener {
             logOut()
         }

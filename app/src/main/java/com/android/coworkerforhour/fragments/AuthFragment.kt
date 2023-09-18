@@ -14,11 +14,18 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import com.android.coworkerforhour.R
+import com.android.coworkerforhour.UsersApp
 import com.android.coworkerforhour.activityes.UserProfileActivity
+import com.android.coworkerforhour.activityes.viewModel.UsersViewModel
+import com.android.coworkerforhour.activityes.viewModel.UsersViewModelFactory
 import com.android.coworkerforhour.databinding.FragmentAuthBinding
 import com.android.coworkerforhour.interfaces.FragmentNavigation
+import com.android.coworkerforhour.model.User
 import com.android.coworkerforhour.objects.FieldValidators
+import com.android.coworkerforhour.repository.UsersRepository
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.properties.Delegates
 
@@ -26,7 +33,8 @@ import kotlin.properties.Delegates
 class AuthFragment : Fragment() {
 
     private lateinit var binding: FragmentAuthBinding
-
+    private lateinit var repository: UsersRepository
+    private lateinit var viewModel: UsersViewModel
 
     inner class TextFieldValidation(view: View, view2: View) :
         TextWatcher {
@@ -55,6 +63,10 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        repository = UsersRepository(UsersApp.INSTANCE.database.usersDao())
+        viewModel = ViewModelProvider(this, UsersViewModelFactory(repository))
+            .get(UsersViewModel::class.java)
 
         putPrefsToConsts()
 
@@ -102,16 +114,29 @@ class AuthFragment : Fragment() {
                 AuthFragment.SHARED_PREFS,
                 Context.MODE_PRIVATE)
 
-            val userName = sharedPreferences?.getString("USER_NAME", "")
-            val password = sharedPreferences?.getString("USER_PASSWORD","")
-            val userNameString = userNameLoginFr.text.toString()
-            val passwordString = passwordFrLogin.text.toString()
 
-            if (userName.equals(userNameString)&&password.equals(passwordString)){
-                Toast.makeText(activity, "Login successful", Toast.LENGTH_SHORT).show()
-               navigateToUserProfile()
-                } else {
-                    Toast.makeText(activity,"Check correctness of your inputs", Toast.LENGTH_SHORT).show()
+            viewModel.user.asLiveData().observe (viewLifecycleOwner){
+                it.forEach {
+                    val userName = "${it.name}"
+                    val userPassword = "${it.password}"
+
+                    if (userName == userNameLoginFr.text.toString() && userPassword == passwordFrLogin.text.toString()){
+
+                        val editor = sharedPreferences?.edit()
+                        with(editor){
+                            this?.putString("USER_NAME", userName)
+                            this?.putString("USER_PASSWORD", userPassword)
+                            this?.apply()
+                        }
+
+                        Toast.makeText(activity, "Login successful", Toast.LENGTH_SHORT).show()
+                        navigateToUserProfile()
+
+                    } else if (false) {
+                        Toast.makeText(activity,"Check correctness of your inputs", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
             }
         }
     }

@@ -10,14 +10,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import com.android.coworkerforhour.UsersApp
 import com.android.coworkerforhour.activityes.UserProfileActivity
+import com.android.coworkerforhour.activityes.viewModel.UsersViewModel
+import com.android.coworkerforhour.activityes.viewModel.UsersViewModelFactory
 import com.android.coworkerforhour.databinding.FragmentRegisterFormBinding
 import com.android.coworkerforhour.interfaces.FragmentNavigation
 import com.android.coworkerforhour.objects.FieldValidators.isStringContainNumber
 import com.android.coworkerforhour.objects.FieldValidators.isStringContainSpecialCharacter
 import com.android.coworkerforhour.objects.FieldValidators.isStringLowerAndUpperCase
 import com.android.coworkerforhour.objects.FieldValidators.isValidEmail
+import com.android.coworkerforhour.repository.UsersRepository
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.GlobalScope
 
 
 class RegisterFormFragment : Fragment() {
@@ -29,6 +35,9 @@ class RegisterFormFragment : Fragment() {
     private lateinit var emailString: String
 
     private lateinit var passwordString: String
+
+    private lateinit var repository: UsersRepository
+    private lateinit var viewModel: UsersViewModel
 
     inner class TextFieldValidation(view: View, view2: View, view3: View, view4: View) : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
@@ -63,7 +72,13 @@ class RegisterFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        repository = UsersRepository(UsersApp.INSTANCE.database.usersDao())
+        viewModel = ViewModelProvider(this, UsersViewModelFactory(repository))
+            .get(UsersViewModel::class.java)
+
         setUpListeners()
+
+
 
         binding.backToLoginBt.setOnClickListener {
             navigateToFragmentLogIn()
@@ -73,7 +88,6 @@ class RegisterFormFragment : Fragment() {
             if (isValidated()){
                 Toast.makeText(this.requireContext(),"Validated successfully", Toast.LENGTH_SHORT).show()
                 saveProfilePrefs()
-
             }
         }
     }
@@ -98,6 +112,11 @@ class RegisterFormFragment : Fragment() {
              userNameString = tietEnterUserName.text.toString()
              emailString = tietEnterEmail.text.toString()
              passwordString = tietInputPassword.text.toString()
+
+            viewModel.insertUser(
+                userName = userNameString,
+                userEmail = emailString,
+                usersPassword = passwordString)
 
             val sharedPreferences = activity?.getSharedPreferences(
                 AuthFragment.SHARED_PREFS,
